@@ -2,7 +2,10 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
+from django.urls import reverse
+
 from .forms import SignUp
+from source.models import Source
 
 
 def signup_view(request):
@@ -23,6 +26,11 @@ def signup_view(request):
 
 class SignInView(LoginView):
     template_name = "user/signin.html"
+
+    def get_success_url(self):
+        if Source.objects.filter(created_by=self.request.user).exists():
+            return reverse("source_list")
+        return reverse("add_source")
 
 
 @login_required

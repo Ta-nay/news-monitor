@@ -9,7 +9,6 @@ class StoryForm(forms.ModelForm):
             "title",
             "body_text",
             "url",
-            "company",
             "tagged_companies",
         ]
 
@@ -17,6 +16,5 @@ class StoryForm(forms.ModelForm):
             "title": forms.TextInput(),
             "body_text": forms.Textarea(),
             "url": forms.URLInput(),
-            "company": forms.Select(),
             "tagged_companies": forms.SelectMultiple(),
         }

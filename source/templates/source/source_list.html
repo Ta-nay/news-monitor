@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Source List</h1>
+<table >
+    <thead>
+        <tr>
+            <th style="width: 30%;">Title</th>
+            <th style="width: 45%;">URL</th>
+            <th style="width: 25%;">Tagged Companies</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for source in sources %}
+        <tr>
+            <td>{{ source.name }}</td>
+            <td>
+                <a href="{{ source.url }}" target="_blank">
+                    {{ source.url }}
+                </a>
+            </td>
+            <td>
+                {% for company in source.tagged_companies.all %}
+                    {{ company.name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    No companies
+                {% endfor %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No sources available</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

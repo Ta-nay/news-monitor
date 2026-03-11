@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Story List</h1>
+<table >
+    <thead>
+        <tr>
+            <th style="width: 35%;">Title</th>
+            <th style="width: 40%;">URL</th>
+            <th style="width: 25%;">Tagged Companies</th>
+        </tr>
+    </thead>
+  <tbody>
+  {% for story in stories %}
+        <tr>
+            <td>{{ story.title }}</td>
+            <td>
+                <a href="{{ story.url }}" target="_blank">
+                    {{ story.url }}
+                </a>
+            </td>
+            <td>
+                {% for company in story.tagged_companies.all %}
+                    {{ company.name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    No companies
+                {% endfor %}
+            </td>
+        </tr>
+
+        {% empty %}
+        <tr>
+            <td colspan="3">No stories available</td>
+        </tr>
+        {% endfor %}
+  </tbody>
+
+
+</table>
+{% endblock %}

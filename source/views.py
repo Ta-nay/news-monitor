@@ -1,5 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.views.generic import ListView
+
+from .models import Source
 from .forms import SourceForm
 
 # Create your views here.
@@ -15,10 +19,20 @@ def add_source(request):
             source = form.save(commit=False)
             source.created_by = request.user
             source.updated_by = request.user
+            source.company = request.user.company
             source.save()
             form.save_m2m()
+            return redirect("source_list")
 
     else:
         form = SourceForm()
 
     return render(request, "source/add_source.html", {"form": form})
+
+
+class SourceListView(LoginRequiredMixin, ListView):
+    model = Source
+    context_object_name = "sources"
+
+    def get_queryset(self):
+        return Source.objects.filter(created_by=self.request.user)

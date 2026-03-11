@@ -8,13 +8,11 @@ class SourceForm(forms.ModelForm):
         fields = [
             "name",
             "url",
-            "company",
             "tagged_companies",
         ]
 
         widgets = {
             "name": forms.TextInput(),
             "url": forms.URLInput(),
-            "company": forms.Select(),
             "tagged_companies": forms.SelectMultiple(),
         }
