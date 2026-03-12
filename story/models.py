@@ -40,9 +40,9 @@ class Story(models.Model):
         related_name="updated_stories",
     )
 
-    title = models.CharField(max_length=256)
+    title = models.CharField(max_length=512)
     body_text = models.TextField()
-    url = models.URLField(validators=[URLValidator()])
+    url = models.URLField(max_length=1000, validators=[URLValidator()])
 
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)

@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, UpdateView, DeleteView
 
 from .models import Source
 from .forms import SourceForm
@@ -36,3 +37,22 @@ class SourceListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Source.objects.filter(created_by=self.request.user)
+
+
+class SourceUpdateView(LoginRequiredMixin, UpdateView):
+    model = Source
+    fields = ["name", "url", "tagged_companies"]
+    template_name = "source/edit_source.html"
+    success_url = reverse_lazy("source_list")
+
+    def get_queryset(self):
+        return Source.objects.filter(company=self.request.user.company)
+
+
+class SourceDeleteView(LoginRequiredMixin, DeleteView):
+    model = Source
+    template_name = "source/delete_source.html"
+    success_url = reverse_lazy("source_list")
+
+    def get_queryset(self):
+        return Source.objects.filter(company=self.request.user.company)

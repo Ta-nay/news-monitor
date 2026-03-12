@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<br><br>
+<div class="container">
+    <br/>
+    <h1>Delete Source</h1>
+
+    <p>Are you sure you want to delete "{{ object.title }}"?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes, Delete</button>
+    </form>
+
+    <a href="{% url 'source_list' %}">Cancel</a>
+</div>
+
+{% endblock %}

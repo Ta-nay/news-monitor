@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from debug_toolbar.toolbar import debug_toolbar_urls
 
 urlpatterns = [
     path("", RedirectView.as_view(pattern_name="signin")),
@@ -26,4 +27,4 @@ urlpatterns = [
     path("companies/", include("company.urls")),
     path("sources/", include("source.urls")),
     path("stories/", include("story.urls")),
-]
+]+ debug_toolbar_urls()

@@ -2,40 +2,122 @@
 
 {% block content %}
 
-<h1>Story List</h1>
-<table >
-    <thead>
-        <tr>
-            <th style="width: 35%;">Title</th>
-            <th style="width: 40%;">URL</th>
-            <th style="width: 25%;">Tagged Companies</th>
-        </tr>
-    </thead>
-  <tbody>
-  {% for story in stories %}
-        <tr>
-            <td>{{ story.title }}</td>
-            <td>
-                <a href="{{ story.url }}" target="_blank">
-                    {{ story.url }}
-                </a>
-            </td>
-            <td>
-                {% for company in story.tagged_companies.all %}
-                    {{ company.name }}{% if not forloop.last %}, {% endif %}
-                {% empty %}
-                    No companies
-                {% endfor %}
-            </td>
-        </tr>
+<div style="display:flex; justify-content:space-between; align-items:center;">
+  <h1>Story List</h1>
 
-        {% empty %}
-        <tr>
-            <td colspan="3">No stories available</td>
-        </tr>
-        {% endfor %}
-  </tbody>
+  <a href="{% url 'add_story' %}">
+    <button style="width:200px">+ add new story</button>
+  </a>
+</div>
 
+<br/>
+<hr>
+<h2>Custom Stories</h2>
 
+<table>
+<thead>
+<tr>
+<th style="width:30%">Title</th>
+<th style="width:35%">URL</th>
+<th style="width:25%">Tagged Companies</th>
+<th style="width:10%">Actions</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for story in custom_stories %}
+<tr>
+<td>{{ story.title }}</td>
+
+<td>
+<a href="{{ story.url }}" target="_blank">
+{{ story.url }}
+</a>
+</td>
+
+<td>
+{% for company in story.tagged_companies.all %}
+{{ company.name }}{% if not forloop.last %}, {% endif %}
+{% empty %}
+No companies
+{% endfor %}
+</td>
+  <td>
+<a href="{% url 'edit_story' story.id %}">
+    <button>Edit</button>
+</a>
+
+<a href="{% url 'delete_story' story.id %}">
+    <button>Delete</button>
+</a>
+</td>
+
+</tr>
+
+{% empty %}
+<tr>
+<td colspan="3">No custom stories available</td>
+</tr>
+{% endfor %}
+
+</tbody>
 </table>
+
+<br/>
+<br/>
+
+<h2>Stories by Source</h2>
+
+{% for source in sources %}
+<h3>{{ source.name }}</h3>
+
+<table>
+<thead>
+<tr>
+<th style="width:30%">Title</th>
+<th style="width:35%">URL</th>
+<th style="width:25%">Tagged Companies</th>
+<th style="width:10%">Actions</th>
+</tr>
+</thead>
+
+<tbody>
+{% for story in source.story_sources.all %}
+<tr>
+<td>{{ story.title }}</td>
+
+<td>
+<a href="{{ story.url }}" target="_blank">
+View Story
+</a>
+</td>
+
+<td>
+{% for company in story.tagged_companies.all %}
+{{ company.name }}{% if not forloop.last %}, {% endif %}
+{% empty %}
+No companies
+{% endfor %}
+</td>
+  <td>
+<a href="{% url 'edit_story' story.id %}">
+    <button>Edit</button>
+</a>
+
+<a href="{% url 'delete_story' story.id %}">
+    <button>Delete</button>
+</a>
+</td>
+
+</tr>
+
+{% empty %}
+<tr>
+<td colspan="3">No stories for this source</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endfor %}
 {% endblock %}
