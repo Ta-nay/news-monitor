@@ -1,8 +1,12 @@
 import feedparser
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
+from django.db.models import Prefetch
+from django.db import IntegrityError
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView, DeleteView
 
@@ -21,9 +25,12 @@ def add_story(request):
             story.created_by = request.user
             story.updated_by = request.user
             story.company = request.user.company
-            story.save()
-            form.save_m2m()
-            return redirect("story_list")
+            try:
+                story.save()
+                form.save_m2m()
+                return redirect("story_list")
+            except IntegrityError:
+                return HttpResponse("Integrity error: this URL already exists")
 
     else:
         form = StoryForm()
@@ -32,50 +39,91 @@ def add_story(request):
 
 
 def fetch_stories(user):
-    sources = Source.objects.filter(company=user.company)
+    company_id = user.company_id
+
+    sources = Source.objects.filter(company_id=company_id).only("id", "url")
+
+    existing_urls = set(
+        Story.objects.filter(company_id=company_id)
+        .values_list("url", flat=True)
+    )
+
+    new_stories = []
 
     for source in sources:
-        feed_object = feedparser.parse(source.url)
+        feed = feedparser.parse(source.url)
 
-        for entry in feed_object.entries:
-            Story.objects.get_or_create(
-                company=user.company,
-                url=entry.link,
-                defaults={
-                    "title": entry.get("title", "")[:255],
-                    "body_text": entry.get("description", ""),
-                    "created_by": user,
-                    "updated_by": user,
-                    "source": source,
-                },
+        for entry in feed.entries[:10]:
+            url = entry.get("link")
+
+            if not url or url in existing_urls:
+                continue
+
+            new_stories.append(
+                Story(
+                    company_id=company_id,
+                    url=url,
+                    title=entry.get("title", "")[:255],
+                    body_text=entry.get("description", ""),
+                    created_by=user,
+                    updated_by=user,
+                    source_id=source.id,
+                )
             )
+
+            existing_urls.add(url)
+
+    if new_stories:
+        Story.objects.bulk_create(new_stories, batch_size=100)
+
+        cache.delete(f"stories_{company_id}")
 
 
 class StoryListView(LoginRequiredMixin, ListView):
     model = Story
+    paginate_by = 25
     context_object_name = "stories"
+    template_name = "story/story_list.html"
 
     def get(self, request, *args, **kwargs):
-        fetch_stories(request.user)
+        company_id = request.user.company_id
+        cache_key = f"rss_fetch_{company_id}"
+
+        if not cache.get(cache_key):
+            fetch_stories(request.user)
+            cache.set(cache_key, True, 600)
+
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return Story.objects.filter(company=self.request.user.company)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        company = self.request.user.company
-
-        context["sources"] = Source.objects.filter(
-            company=company
-        ).prefetch_related("story_sources")
-
-        context["custom_stories"] = Story.objects.filter(
-            company=company, source__isnull=True
+        return (
+            Story.objects.filter(company_id=self.request.user.company_id)
+            .select_related("source")
+            .prefetch_related("tagged_companies")
+            .order_by("-id")
         )
-
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #
+    #     company = self.request.user.company
+    #
+    #     context["sources"] = Source.objects.filter(
+    #         company=company
+    #     ).prefetch_related(
+    #         Prefetch(
+    #             "story_sources",
+    #             queryset=Story.objects.select_related(
+    #                 "source"
+    #             ).prefetch_related("tagged_companies"),
+    #         )
+    #     )
+    #
+    #     context["custom_stories"] = Story.objects.filter(
+    #         company=company,
+    #         source__isnull=True,
+    #     ).prefetch_related("tagged_companies")
+    #
+    #     return context
 
 
 class StoryUpdateView(LoginRequiredMixin, UpdateView):

@@ -17,8 +17,7 @@ urlpatterns = [
         name="edit_source",
     ),
     path(
-        "<int:pk>/delete/",
-        SourceDeleteView.as_view(),
+        "<int:pk>/delete/", SourceDeleteView.as_view(),
         name="delete_source",
     ),
 ]

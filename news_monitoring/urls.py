@@ -27,4 +27,4 @@ urlpatterns = [
     path("companies/", include("company.urls")),
     path("sources/", include("source.urls")),
     path("stories/", include("story.urls")),
-]+ debug_toolbar_urls()
+] + debug_toolbar_urls()

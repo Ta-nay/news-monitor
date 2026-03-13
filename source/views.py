@@ -1,3 +1,4 @@
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -12,7 +13,6 @@ from .forms import SourceForm
 
 @login_required
 def add_source(request):
-
     if request.method == "POST":
         form = SourceForm(request.POST)
 
@@ -36,7 +36,12 @@ class SourceListView(LoginRequiredMixin, ListView):
     context_object_name = "sources"
 
     def get_queryset(self):
-        return Source.objects.filter(created_by=self.request.user)
+        return (
+            Source.objects
+            .filter(created_by=self.request.user)
+            .select_related("created_by")
+            .prefetch_related("tagged_companies")
+        )
 
 
 class SourceUpdateView(LoginRequiredMixin, UpdateView):

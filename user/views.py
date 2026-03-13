@@ -9,7 +9,6 @@ from source.models import Source
 
 
 def signup_view(request):
-
     if request.method == "POST":
         form = SignUp(request.POST)
         if form.is_valid():
@@ -17,10 +16,8 @@ def signup_view(request):
             user.company = form.cleaned_data["company"]
             user.save()
             return redirect("signin")
-
     else:
         form = SignUp()
-
     return render(request, "user/signup.html", {"form": form})
 
 

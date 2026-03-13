@@ -1,123 +1,69 @@
 {% extends "base.html" %}
-
 {% block content %}
-
 <div style="display:flex; justify-content:space-between; align-items:center;">
-  <h1>Story List</h1>
-
-  <a href="{% url 'add_story' %}">
-    <button style="width:200px">+ add new story</button>
-  </a>
+   <h1>Story List</h1>
+   <a href="{% url 'add_story' %}">
+   <button style="width:200px">+ add new story</button>
+   </a>
 </div>
-
 <br/>
-<hr>
-<h2>Custom Stories</h2>
-
 <table>
-<thead>
-<tr>
-<th style="width:30%">Title</th>
-<th style="width:35%">URL</th>
-<th style="width:25%">Tagged Companies</th>
-<th style="width:10%">Actions</th>
-</tr>
-</thead>
-
-<tbody>
-
-{% for story in custom_stories %}
-<tr>
-<td>{{ story.title }}</td>
-
-<td>
-<a href="{{ story.url }}" target="_blank">
-{{ story.url }}
-</a>
-</td>
-
-<td>
-{% for company in story.tagged_companies.all %}
-{{ company.name }}{% if not forloop.last %}, {% endif %}
-{% empty %}
-No companies
-{% endfor %}
-</td>
-  <td>
-<a href="{% url 'edit_story' story.id %}">
-    <button>Edit</button>
-</a>
-
-<a href="{% url 'delete_story' story.id %}">
-    <button>Delete</button>
-</a>
-</td>
-
-</tr>
-
-{% empty %}
-<tr>
-<td colspan="3">No custom stories available</td>
-</tr>
-{% endfor %}
-
-</tbody>
+   <thead>
+      <tr>
+         <th style="width:30%">Title</th>
+         <th style="width:35%">URL</th>
+         <th style="width:25%">Tagged Companies</th>
+         <th style="width:10%">Actions</th>
+      </tr>
+   </thead>
+   <tbody>
+      {% for story in stories %}
+      <tr {% if not story.source %}style="background-color:#ffe6e6;"{% endif %}>
+         <td>{{ story.title }}</td>
+         <td>
+            <a href="{{ story.url }}" target="_blank">
+            View Story
+            </a>
+         </td>
+         <td>
+            {% for company in story.tagged_companies.all %}
+            {{ company.name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+            No companies
+            {% endfor %}
+         </td>
+         <td>
+            <a href="{% url 'edit_story' story.id %}">
+            <button>Edit</button>
+            </a>
+            <a href="{% url 'delete_story' story.id %}">
+            <button>Delete</button>
+            </a>
+         </td>
+      </tr>
+      {% empty %}
+      <tr>
+         <td colspan="4">No stories available</td>
+      </tr>
+      {% endfor %}
+   </tbody>
 </table>
-
 <br/>
-<br/>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
 
-<h2>Stories by Source</h2>
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
 
-{% for source in sources %}
-<h3>{{ source.name }}</h3>
-
-<table>
-<thead>
-<tr>
-<th style="width:30%">Title</th>
-<th style="width:35%">URL</th>
-<th style="width:25%">Tagged Companies</th>
-<th style="width:10%">Actions</th>
-</tr>
-</thead>
-
-<tbody>
-{% for story in source.story_sources.all %}
-<tr>
-<td>{{ story.title }}</td>
-
-<td>
-<a href="{{ story.url }}" target="_blank">
-View Story
-</a>
-</td>
-
-<td>
-{% for company in story.tagged_companies.all %}
-{{ company.name }}{% if not forloop.last %}, {% endif %}
-{% empty %}
-No companies
-{% endfor %}
-</td>
-  <td>
-<a href="{% url 'edit_story' story.id %}">
-    <button>Edit</button>
-</a>
-
-<a href="{% url 'delete_story' story.id %}">
-    <button>Delete</button>
-</a>
-</td>
-
-</tr>
-
-{% empty %}
-<tr>
-<td colspan="3">No stories for this source</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-{% endfor %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 {% endblock %}
