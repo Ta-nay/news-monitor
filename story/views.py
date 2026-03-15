@@ -44,8 +44,9 @@ def fetch_stories(user):
     sources = Source.objects.filter(company_id=company_id).only("id", "url")
 
     existing_urls = set(
-        Story.objects.filter(company_id=company_id)
-        .values_list("url", flat=True)
+        Story.objects.filter(company_id=company_id).values_list(
+            "url", flat=True
+        )
     )
 
     new_stories = []
@@ -102,6 +103,7 @@ class StoryListView(LoginRequiredMixin, ListView):
             .prefetch_related("tagged_companies")
             .order_by("-id")
         )
+
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
     #

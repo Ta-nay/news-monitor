@@ -9,7 +9,3 @@ class CompanyForm(forms.ModelForm):
             "name",
             "url",
         ]
-        widgets = {
-            "name": forms.TextInput(),
-            "url": forms.URLInput(),
-        }
