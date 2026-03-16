@@ -20,33 +20,5 @@
     <a href="{% url 'signin' %}">Login</a>
     </p>
 </div>
-<script>
-$(document).ready(function(){
-
-    $("#id_company").select2({
-        ajax: {
-            url: "{% url 'company_autocomplete' %}",
-            dataType: "json",
-            delay: 250,
-            data: function(params) {
-                return {
-                    term: params.term
-                };
-            },
-            processResults: function(data) {
-                return {
-                    results: data.results
-                };
-            },
-            cache: true
-        },
-        minimumInputLength: 2,
-        placeholder: "Search companies",
-        multiple: false,
-        width: "100%"
-    });
-
-});
-</script>
 
 {% endblock %}

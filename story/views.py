@@ -3,10 +3,10 @@ import feedparser
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from django.db import IntegrityError
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView, DeleteView
 
@@ -14,61 +14,39 @@ from .forms import StoryForm
 from .models import Story
 from source.models import Source
 
-def story_autocomplete(request):
-    query = request.GET.get("q", "")
-
-    stories = (
-        Story.objects
-        .filter(title__icontains=query)
-        .values("title", "url")[:5]
-    )
-
-    return JsonResponse({
-        "results": list(stories)
-    })
-
 
 @login_required
-def save_story(request, pk=None):
-    if pk:
-        if self.request.user.is_staff:
-            story = get_object_or_404(Story, pk=pk)
-        else:
-            story = get_object_or_404(Story, pk=pk,company=request.user.company)
-    else:
-        story = None
-
+def add_story(request):
     if request.method == "POST":
-        form = StoryForm(request.POST, instance=story)
+        form = StoryForm(request.POST)
+
         if form.is_valid():
             story = form.save(commit=False)
-            if not story.pk:
-                story.created_by = request.user
-                story.company = request.user.company
+            story.created_by = request.user
             story.updated_by = request.user
-            story.save()
-            form.save_m2m()
-            return redirect("story_list")
+            story.company = request.user.company
+            try:
+                story.save()
+                form.save_m2m()
+                return redirect("story_list")
+            except IntegrityError:
+                return HttpResponse("Integrity error: this URL already exists")
+
     else:
-        form = StoryForm(instance=story)
+        form = StoryForm()
 
     return render(request, "story/add_story.html", {"form": form})
 
 
 def fetch_stories(user):
-    if user.is_staff:
-        sources = Source.objects.all().only("id", "url", "company_id")
-    else:
-        sources = Source.objects.filter(
-            company_id=user.company_id
-        ).only("id", "url", "company_id")
+    company_id = user.company_id
 
-    # Load all existing story URLs once
+    sources = Source.objects.filter(company_id=company_id).only("id", "url")
+
     existing_urls = set(
-        Story.objects.values_list("url", flat=True)
-        if user.is_staff
-        else Story.objects.filter(company_id=user.company_id)
-        .values_list("url", flat=True)
+        Story.objects.filter(company_id=company_id).values_list(
+            "url", flat=True
+        )
     )
 
     new_stories = []
@@ -84,7 +62,7 @@ def fetch_stories(user):
 
             new_stories.append(
                 Story(
-                    company_id=source.company_id,
+                    company_id=company_id,
                     url=url,
                     title=entry.get("title", "")[:255],
                     body_text=entry.get("description", ""),
@@ -99,10 +77,7 @@ def fetch_stories(user):
     if new_stories:
         Story.objects.bulk_create(new_stories, batch_size=100)
 
-        # Clear cache for affected companies
-        company_ids = {story.company_id for story in new_stories}
-        for cid in company_ids:
-            cache.delete(f"stories_{cid}")
+        cache.delete(f"stories_{company_id}")
 
 
 class StoryListView(LoginRequiredMixin, ListView):
@@ -122,23 +97,12 @@ class StoryListView(LoginRequiredMixin, ListView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Story.objects.all()
-        queryset = (
+        return (
             Story.objects.filter(company_id=self.request.user.company_id)
             .select_related("source")
             .prefetch_related("tagged_companies")
             .order_by("-id")
         )
-
-        query = self.request.GET.get("q")
-
-        if query:
-            queryset = queryset.filter(
-                Q(title__icontains=query) | Q(body_text__icontains=query)
-            )
-
-        return queryset
 
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
@@ -164,22 +128,20 @@ class StoryListView(LoginRequiredMixin, ListView):
     #     return context
 
 
+class StoryUpdateView(LoginRequiredMixin, UpdateView):
+    model = Story
+    fields = ["title", "body_text", "url", "tagged_companies"]
+    template_name = "story/edit_story.html"
+    success_url = reverse_lazy("story_list")
+
+    def get_queryset(self):
+        return Story.objects.filter(company=self.request.user.company)
+
+
 class StoryDeleteView(LoginRequiredMixin, DeleteView):
     model = Story
     template_name = "story/delete_story.html"
     success_url = reverse_lazy("story_list")
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Story.objects.all()
         return Story.objects.filter(company=self.request.user.company)
-
-
-# class StoryUpdateView(LoginRequiredMixin, UpdateView):
-#     model = Story
-#     fields = ["title", "body_text", "url", "tagged_companies"]
-#     template_name = "story/edit_story.html"
-#     success_url = reverse_lazy("story_list")
-#
-#     def get_queryset(self):
-#         return Story.objects.filter(company=self.request.user.company)

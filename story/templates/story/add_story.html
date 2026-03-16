@@ -5,11 +5,7 @@
 <br><br>
 <div class="container">
     <br/>
-    {% if form.instance.pk %}
-        <h1>Edit Story</h1>
-    {% else %}
-        <h1>Add Story</h1>
-    {% endif %}
+    <h1>Add Story</h1>
     <br/>
     <form method="POST">
             {% csrf_token %}

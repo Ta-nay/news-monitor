@@ -12,7 +12,7 @@ def signup_view(request):
     if request.method == "POST":
         form = SignUp(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
             user.company = form.cleaned_data["company"]
             user.save()
             return redirect("signin")

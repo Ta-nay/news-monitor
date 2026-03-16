@@ -6,9 +6,9 @@ from company.models import Company
 class SourceForm(forms.ModelForm):
 
     tagged_companies = forms.ModelMultipleChoiceField(
-        queryset=Company.objects.all()[:10],
-        # widget=forms.SelectMultiple(attrs={"class": "company-autocomplete"}),
-        # required=False,
+        queryset=Company.objects.none(),
+        widget=forms.SelectMultiple(attrs={"class": "company-autocomplete"}),
+        required=False,
     )
 
     class Meta:
