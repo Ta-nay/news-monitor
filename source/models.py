@@ -37,9 +37,9 @@ class Source(models.Model):
 
     class Meta:
         unique_together = ("company", "url")
-        indexes = [
-            models.Index(fields=["name"]),
-        ]
+        # indexes = [
+        #     models.Index(fields=["name"]),
+        # ]
 
     def __str__(self):
         return self.name

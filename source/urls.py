@@ -1,19 +1,19 @@
 from django.urls import path
 from .views import (
-    add_source,
     SourceListView,
     SourceDeleteView,
-    SourceUpdateView,
+    save_source,
+source_autocomplete
 )
 
 # app_name = "sources"
 
 urlpatterns = [
-    path("add/", add_source, name="add_source"),
+    path("add/", save_source, name="add_source"),
     path("", SourceListView.as_view(), name="source_list"),
     path(
         "<int:pk>/edit/",
-        SourceUpdateView.as_view(),
+        save_source,
         name="edit_source",
     ),
     path(
@@ -21,4 +21,5 @@ urlpatterns = [
         SourceDeleteView.as_view(),
         name="delete_source",
     ),
+    path("/autocomplete",source_autocomplete, name="source_autocomplete")
 ]

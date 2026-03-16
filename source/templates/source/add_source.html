@@ -5,7 +5,11 @@
 <br><br>
 <div class="container">
     <br/>
+    {% if form.instance.pk %}
+    <h1>Edit source</h1>
+    {% else %}
     <h1>Add source</h1>
+    {% endif%}
     <form method="POST">
         {% csrf_token %}
         {{ form | crispy }}

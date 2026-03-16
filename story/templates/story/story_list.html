@@ -6,6 +6,27 @@
    <button style="width:200px">+ add new story</button>
    </a>
 </div>
+<form method="GET" action="{% url 'story_list' %}" class="mb-3 position-relative">
+
+    <div class="input-group">
+        <input
+            type="text"
+            id="story-search"
+            name="q"
+            class="form-control"
+            placeholder="Search stories..."
+            value="{{ request.GET.q }}"
+            autocomplete="off"
+        >
+
+        <button type="submit" class="btn btn-primary">
+            Search
+        </button>
+    </div>
+
+    <div id="story-suggestions" class="list-group position-absolute w-100"></div>
+
+</form>
 <br/>
 <table>
    <thead>
@@ -33,12 +54,14 @@
             {% endfor %}
          </td>
          <td>
+             {% if request.user.is_staff or story.created_by == request.user %}
             <a href="{% url 'edit_story' story.id %}">
             <button>Edit</button>
             </a>
             <a href="{% url 'delete_story' story.id %}">
             <button>Delete</button>
             </a>
+             {% endif %}
          </td>
       </tr>
       {% empty %}
@@ -66,4 +89,43 @@
         {% endif %}
     </span>
 </div>
+<script>
+$(function(){
+
+    $("#story-search").on("keyup", function(){
+
+        let query = $(this).val();
+
+        if(query.length < 2){
+            $("#story-suggestions").empty();
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'story_autocomplete' %}",
+            data: { q: query },
+
+            success: function(data){
+
+                let suggestions = "";
+
+                data.results.forEach(function(story){
+
+                    suggestions += `
+                        <a href="${story.url}"
+                           class="list-group-item list-group-item-action"
+                           target="_blank">
+                           ${story.title}
+                        </a>
+                    `;
+                });
+
+                $("#story-suggestions").html(suggestions);
+            }
+        });
+
+    });
+
+});
+</script>
 {% endblock %}

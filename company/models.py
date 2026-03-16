@@ -19,9 +19,8 @@ class Company(models.Model):
         related_name="updated_companies",
     )
 
-    name = models.CharField(max_length=256, db_index=True)
-    url = models.URLField(db_index=True)
-
+    name = models.CharField(max_length=256)
+    url = models.URLField(validators=[URLValidator()])
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
