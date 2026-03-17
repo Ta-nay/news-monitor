@@ -3,7 +3,7 @@ from .views import (
     SourceListView,
     SourceDeleteView,
     save_source,
-source_autocomplete
+    source_autocomplete,
 )
 
 # app_name = "sources"
@@ -21,5 +21,5 @@ urlpatterns = [
         SourceDeleteView.as_view(),
         name="delete_source",
     ),
-    path("/autocomplete",source_autocomplete, name="source_autocomplete")
+    path("search/", source_autocomplete, name="source_autocomplete"),
 ]

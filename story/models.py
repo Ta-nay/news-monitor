@@ -9,6 +9,7 @@ from source.models import Source
 
 # Create your models here.
 class Story(models.Model):
+    """This model is to store the stories fetched from the Source rss"""
     # ManyToMany
     tagged_companies = models.ManyToManyField(
         Company, related_name="story_tags"
@@ -42,7 +43,7 @@ class Story(models.Model):
 
     title = models.CharField(max_length=512)
     body_text = models.TextField()
-    url = models.URLField(max_length=1000, db_index=True)
+    url = models.TextField(validators=[URLValidator()])
 
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -50,7 +51,11 @@ class Story(models.Model):
     class Meta:
         unique_together = ("company", "url")
         indexes = [
-            models.Index(fields=["title"]),
+            GinIndex(
+                fields=["title"],
+                name="story_title_gin",
+                opclasses=["gin_trgm_ops"],
+            ),
             GinIndex(
                 fields=["body_text"],
                 name="story_body_gin",

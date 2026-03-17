@@ -5,13 +5,10 @@
 <br><br>
 <div class="container">
     <h1>Add Company</h1>
-
     <form method="POST">
         {% csrf_token %}
         {{ form|crispy }}
-
         <br>
-
         <button type="submit" class="btn btn-primary" style="width:200px">
             Add
         </button>

@@ -4,9 +4,9 @@ from company.views import company_autocomplete
 from .views import add_company
 
 urlpatterns = [
-    path("add", add_company, name="add_company"),
+    path("add/", add_company, name="add_company"),
     path(
-        "autocomplete/",
+        "search/",
         company_autocomplete,
         name="company_autocomplete",
     ),

@@ -8,6 +8,9 @@ from company.models import Company
 
 
 class Subscriber(AbstractUser):
+    """A Subscriber model that inherits the Abstract user model, hence has access to fields -
+    username, first_name, last_name, email, password which can be directly be accessed in forms.
+    """
     # OneToMany
     company = models.ForeignKey(
         Company,

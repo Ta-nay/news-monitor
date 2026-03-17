@@ -5,7 +5,7 @@ from company.models import Company
 
 class StoryForm(forms.ModelForm):
     tagged_companies = forms.ModelMultipleChoiceField(
-        queryset=Company.objects.all(), required=False  # important
+        queryset=Company.objects.none(), required=False
     )
 
     class Meta:
@@ -19,7 +19,6 @@ class StoryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         if self.data.getlist("tagged_companies"):
             self.fields["tagged_companies"].queryset = Company.objects.filter(
                 id__in=self.data.getlist("tagged_companies")

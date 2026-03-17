@@ -10,34 +10,75 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView, DeleteView
 
-from .forms import StoryForm
-from .models import Story
+from story.forms import StoryForm
+from story.models import Story
 from source.models import Source
 
-def story_autocomplete(request):
-    query = request.GET.get("q", "")
 
-    stories = (
-        Story.objects
-        .filter(title__icontains=query)
-        .values("title", "url")[:5]
+def fetch_stories(user):
+    """function to fetch stories from each source rss and cache them"""
+    if user.is_staff:
+        sources = Source.objects.all().only("id", "url", "company_id")
+    else:
+        sources = Source.objects.filter(company_id=user.company_id).only(
+            "id", "url", "company_id"
+        )
+    # Load all existing story URLs once
+    existing_urls = set(
+        Story.objects.values_list("url", flat=True)
+        if user.is_staff
+        else Story.objects.filter(company_id=user.company_id).values_list(
+            "url", flat=True
+        )
     )
+    new_stories = []
+    for source in sources:
+        feed = feedparser.parse(source.url)
+        for entry in feed.entries[:10]:
+            url = entry.get("link")
+            if not url or url in existing_urls:
+                continue
+            new_stories.append(
+                Story(
+                    company_id=source.company_id,
+                    url=url,
+                    title=entry.get("title", "")[:512],
+                    body_text=entry.get("description", ""),
+                    created_by=user,
+                    updated_by=user,
+                    source_id=source.id,
+                )
+            )
+            existing_urls.add(url)
+    if new_stories:
+        Story.objects.bulk_create(new_stories, batch_size=100)
+        # Clear cache for affected companies
+        company_ids = {story.company_id for story in new_stories}
+        for cid in company_ids:
+            cache.delete(f"stories_{cid}")
 
-    return JsonResponse({
-        "results": list(stories)
-    })
+
+def story_autocomplete(request):
+    """ Logic to add autocomplete for story searching bar. """
+    query = request.GET.get("q", "")
+    stories = Story.objects.filter(title__icontains=query).values(
+        "title", "url"
+    )[:5]
+    return JsonResponse({"results": list(stories)})
 
 
 @login_required
 def save_story(request, pk=None):
+    """ A combined view to handle both add and update story. """
     if pk:
-        if self.request.user.is_staff:
+        if request.user.is_staff:
             story = get_object_or_404(Story, pk=pk)
         else:
-            story = get_object_or_404(Story, pk=pk,company=request.user.company)
+            story = get_object_or_404(
+                Story, pk=pk, company=request.user.company
+            )
     else:
         story = None
-
     if request.method == "POST":
         form = StoryForm(request.POST, instance=story)
         if form.is_valid():
@@ -51,58 +92,18 @@ def save_story(request, pk=None):
             return redirect("story_list")
     else:
         form = StoryForm(instance=story)
-
     return render(request, "story/add_story.html", {"form": form})
 
 
-def fetch_stories(user):
-    if user.is_staff:
-        sources = Source.objects.all().only("id", "url", "company_id")
-    else:
-        sources = Source.objects.filter(
-            company_id=user.company_id
-        ).only("id", "url", "company_id")
+class StoryDeleteView(LoginRequiredMixin, DeleteView):
+    model = Story
+    template_name = "story/delete_story.html"
+    success_url = reverse_lazy("story_list")
 
-    # Load all existing story URLs once
-    existing_urls = set(
-        Story.objects.values_list("url", flat=True)
-        if user.is_staff
-        else Story.objects.filter(company_id=user.company_id)
-        .values_list("url", flat=True)
-    )
-
-    new_stories = []
-
-    for source in sources:
-        feed = feedparser.parse(source.url)
-
-        for entry in feed.entries[:10]:
-            url = entry.get("link")
-
-            if not url or url in existing_urls:
-                continue
-
-            new_stories.append(
-                Story(
-                    company_id=source.company_id,
-                    url=url,
-                    title=entry.get("title", "")[:255],
-                    body_text=entry.get("description", ""),
-                    created_by=user,
-                    updated_by=user,
-                    source_id=source.id,
-                )
-            )
-
-            existing_urls.add(url)
-
-    if new_stories:
-        Story.objects.bulk_create(new_stories, batch_size=100)
-
-        # Clear cache for affected companies
-        company_ids = {story.company_id for story in new_stories}
-        for cid in company_ids:
-            cache.delete(f"stories_{cid}")
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Story.objects.all()
+        return Story.objects.filter(company=self.request.user.company)
 
 
 class StoryListView(LoginRequiredMixin, ListView):
@@ -112,32 +113,29 @@ class StoryListView(LoginRequiredMixin, ListView):
     template_name = "story/story_list.html"
 
     def get(self, request, *args, **kwargs):
+        """ This method is called when the story list page is requested."""
         company_id = request.user.company_id
         cache_key = f"rss_fetch_{company_id}"
-
         if not cache.get(cache_key):
             fetch_stories(request.user)
             cache.set(cache_key, True, 600)
-
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
+        """ A custom queryset to return the stories that belong to the company of the logged in user. """
         if self.request.user.is_staff:
             return Story.objects.all()
         queryset = (
             Story.objects.filter(company_id=self.request.user.company_id)
-            .select_related("source")
+            .select_related("source","created_by")
             .prefetch_related("tagged_companies")
             .order_by("-id")
         )
-
         query = self.request.GET.get("q")
-
         if query:
             queryset = queryset.filter(
                 Q(title__icontains=query) | Q(body_text__icontains=query)
             )
-
         return queryset
 
     # def get_context_data(self, **kwargs):
@@ -162,17 +160,6 @@ class StoryListView(LoginRequiredMixin, ListView):
     #     ).prefetch_related("tagged_companies")
     #
     #     return context
-
-
-class StoryDeleteView(LoginRequiredMixin, DeleteView):
-    model = Story
-    template_name = "story/delete_story.html"
-    success_url = reverse_lazy("story_list")
-
-    def get_queryset(self):
-        if self.request.user.is_staff:
-            return Story.objects.all()
-        return Story.objects.filter(company=self.request.user.company)
 
 
 # class StoryUpdateView(LoginRequiredMixin, UpdateView):
