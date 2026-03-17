@@ -9,6 +9,23 @@
     <button style="width:200px">+ add new source</button>
   </a>
 </div>
+<form method="GET" action="{% url 'source_list' %}" class="mb-3">
+    <div class="input-group">
+    <input
+        type="text"
+        id="source-search"
+        name="q"
+        placeholder="Search sources..."
+        value="{{ request.GET.q }}"
+        class="form-control"
+        autocomplete="off"
+    >
+    <button type="submit" class="btn btn-primary">
+            Search
+        </button>
+    </div>
+    <div id="source-suggestions" class="list-group position-absolute w-100"></div>
+</form>
 <br/>
 <table >
     <thead>
@@ -36,13 +53,15 @@
                 {% endfor %}
             </td>
             <td>
+                {% if request.user.is_staff or source.created_by == request.user %}
                 <a href="{% url 'edit_source' source.id %}">
-                    <button>Edit</button>
+                <button>Edit</button>
                 </a>
 
                 <a href="{% url 'delete_source' source.id %}">
-                    <button>Delete</button>
+                <button>Delete</button>
                 </a>
+                {% endif %}
             </td>
         </tr>
         {% empty %}
@@ -53,5 +72,43 @@
     </tbody>
 </table>
 <br/>
+<script>
+$(function(){
 
+    $("#source-search").on("keyup", function(){
+
+        let query = $(this).val();
+
+        if(query.length < 2){
+            $("#source-suggestions").empty();
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'source_autocomplete' %}",
+            data: { q: query },
+
+            success: function(data){
+
+                let suggestions = "";
+
+                data.results.forEach(function(source){
+
+                    suggestions += `
+                        <a href="${source.url}"
+                           class="list-group-item list-group-item-action"
+                           target="_blank">
+                           ${source.name}
+                        </a>
+                    `;
+                });
+
+                $("#source-suggestions").html(suggestions);
+            }
+        });
+
+    });
+
+});
+</script>
 {% endblock %}

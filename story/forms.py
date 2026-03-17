@@ -5,7 +5,7 @@ from company.models import Company
 
 class StoryForm(forms.ModelForm):
     tagged_companies = forms.ModelMultipleChoiceField(
-        queryset=Company.objects.none(), required=False  # important
+        queryset=Company.objects.all(), required=False  # important
     )
 
     class Meta:

@@ -10,6 +10,7 @@ class SignUp(UserCreationForm):
 
     company = forms.ModelChoiceField(
         queryset=Company.objects.all(),
+        required= False
     )
 
     class Meta:
