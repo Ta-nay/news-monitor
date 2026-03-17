@@ -1,0 +1,20 @@
+# Python
+*.pyc
+__pycache__/
+*~$
+*.bak
+
+# Virtual Environment
+.env
+nenv/
+
+# Django-specific
+*.log
+*.pot
+local_settings.py
+db.sqlite3
+media/
+static/
+
+# IDE-specific (e.g., PyCharm, VS Code)
+.idea/
