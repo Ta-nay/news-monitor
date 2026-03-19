@@ -1,15 +1,10 @@
 from django.urls import path
-from .views import (
-    save_story,
-    StoryListView,
-    StoryDeleteView,
-    story_autocomplete,
-)
+from .views import add_or_update, list_story, delete_story
 
 urlpatterns = [
-    path("add/", save_story, name="add_story"),
-    path("", StoryListView.as_view(), name="story_list"),
-    path("<int:pk>/edit/", save_story, name="edit_story"),
-    path("<int:pk>/delete/", StoryDeleteView.as_view(), name="delete_story"),
-    path("search/", story_autocomplete, name="story_autocomplete"),
+    path("add/", add_or_update, name="add_story"),
+    path("", list_story, name="story_list"),
+    path("<int:id>/edit/", add_or_update, name="edit_story"),
+    path("<int:id>/delete/", delete_story, name="delete_story"),
+    # path("search/", story_autocomplete, name="story_autocomplete"),
 ]

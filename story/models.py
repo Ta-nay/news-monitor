@@ -10,6 +10,7 @@ from source.models import Source
 # Create your models here.
 class Story(models.Model):
     """This model is to store the stories fetched from the Source rss"""
+
     # ManyToMany
     tagged_companies = models.ManyToManyField(
         Company, related_name="story_tags"

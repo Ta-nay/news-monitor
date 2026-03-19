@@ -11,6 +11,7 @@ class Source(models.Model):
     """
     Source model for adding a unique source rss, each source must be unique for the company
     """
+
     # ManyToMany
     tagged_companies = models.ManyToManyField(
         Company, related_name="source_tags"

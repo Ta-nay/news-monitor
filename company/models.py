@@ -9,6 +9,7 @@ class Company(models.Model):
     """
     Company with a unique name and url.
     """
+
     # OneToMany
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -23,14 +24,13 @@ class Company(models.Model):
         related_name="updated_companies",
     )
 
-    name = models.CharField(max_length=256, unique=True)
-    url = models.TextField(validators=[URLValidator()])
+    name = models.CharField(max_length=256)
+    url = models.TextField(validators=[URLValidator()], unique=True)
 
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ("name", "url")
         indexes = [
             GinIndex(
                 fields=["name"],
