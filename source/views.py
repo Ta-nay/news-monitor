@@ -11,6 +11,7 @@ from source.service import (
     save_source_service,
     delete_source_service,
 )
+from story.service import fetch_stories
 
 
 # Create your views here.
@@ -27,6 +28,7 @@ def add_or_update(request, id=None):
         form = SourceForm(request.POST, instance=source)
         if form.is_valid():
             save_source_service(form, request.user)
+            fetch_stories(request.user)
             return redirect("source_list")
     else:
         form = SourceForm(instance=source)
@@ -57,7 +59,6 @@ def list_source(request):
 def delete_source(request, id):
     delete_source_service(request.user, id)
     return redirect("source_list")
-
 
 # def source_autocomplete(request):
 #     """Logic for autocomplete added on source searching bar."""

@@ -10,19 +10,15 @@ from source.models import Source
 def fetch_stories(user):
     """function to fetch stories from each source rss and cache them"""
     if user.is_staff:
-        sources = Source.objects.all().only("id", "url", "company_id")
+        sources = Source.objects.all()
+        urls = Story.objects.values_list("url", flat=True)
     else:
-        sources = Source.objects.filter(company_id=user.company_id).only(
-            "id", "url", "company_id"
-        )
-    # Load all existing story URLs once
-    existing_urls = set(
-        Story.objects.values_list("url", flat=True)
-        if user.is_staff
-        else Story.objects.filter(company_id=user.company_id).values_list(
+        sources = Source.objects.filter(company_id=user.company_id)
+        urls = Story.objects.filter(company_id=user.company_id).values_list(
             "url", flat=True
         )
-    )
+    # Load all existing story URLs once
+    existing_urls = set(urls)
     new_stories = []
     for source in sources:
         feed = feedparser.parse(source.url)
