@@ -1,0 +1,28 @@
+<button (click)="createStory()">+ Create Story</button>
+
+@if (loading) {
+  <div>Loading...</div>
+} @else {
+
+  @if ((stories$ | async)?.length === 0) {
+    <div>No stories found.</div>
+  } @else {
+    @for (story of (stories$ | async); track story.id) {
+      <div class="card">
+        <h3>{{ story.title }}</h3>
+
+        <p>{{ story.body_text }}</p>
+        <p class="story-link">
+          <a [href]="story.url" target="_blank" rel="noopener noreferrer">
+            Read Full Story →
+          </a>
+        </p>
+
+        <button (click)="editStory(story.id)">Edit</button>
+        <button (click)="deleteStory(story.id)">Delete</button>
+      </div>
+    }
+
+  }
+
+}

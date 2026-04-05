@@ -1,0 +1,32 @@
+<h2>{{ isEdit ? 'Edit Source' : 'Create Source' }}</h2>
+
+@if (loading) {
+  <div>Loading...</div>
+} @else {
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+
+    <div>
+      <label>Name</label>
+      <input formControlName="name" />
+    </div>
+
+    <div>
+      <label>URL</label>
+      <input formControlName="url" />
+    </div>
+
+    <div>
+      <label>Company ID</label>
+      <input type="number" formControlName="company_id" />
+    </div>
+
+    <button type="submit">
+      {{ isEdit ? 'Update' : 'Create' }}
+    </button>
+
+    <button type="button" (click)="goBack()">Cancel</button>
+
+  </form>
+
+}

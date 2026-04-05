@@ -1,3 +1,5 @@
+
+"""working views"""
 import feedparser
 
 from django.contrib.auth.decorators import login_required
@@ -71,6 +73,12 @@ def delete_story(request, id):
     return redirect("story_list")
 
 
+def new_stories(request):
+    return render(request, "story/index.html", context={})
+
+
+
+"""obselete views"""
 # class StoryDeleteView(LoginRequiredMixin, DeleteView):
 #     model = Story
 #     template_name = "story/delete_story.html"

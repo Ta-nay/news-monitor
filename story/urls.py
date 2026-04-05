@@ -1,10 +1,12 @@
+"""original urls"""
 from django.urls import path
-from .views import add_or_update, list_story, delete_story
+from .views import add_or_update, list_story, delete_story, new_stories
 
 urlpatterns = [
     path("add/", add_or_update, name="add_story"),
     path("", list_story, name="story_list"),
     path("<int:id>/edit/", add_or_update, name="edit_story"),
     path("<int:id>/delete/", delete_story, name="delete_story"),
+    path("new/", new_stories, name="ang_stories"),
     # path("search/", story_autocomplete, name="story_autocomplete"),
 ]

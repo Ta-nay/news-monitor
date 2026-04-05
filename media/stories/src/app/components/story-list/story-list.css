@@ -1,0 +1,93 @@
+/* Page container */
+:host {
+  display: block;
+  padding: 24px;
+  background: #f4f6fb;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Create button */
+button {
+  background: #4f46e5;
+  color: #fff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+/* Card */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  transition: 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+/* Title */
+.card h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #111827;
+}
+
+/* Text */
+.card p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Body text (story content) */
+.card p:nth-of-type(3) {
+  margin-top: 10px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* Buttons inside card */
+.card button {
+  margin-top: 10px;
+  margin-right: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* Edit */
+.card button:first-of-type {
+  background: #10b981;
+}
+
+.card button:first-of-type:hover {
+  background: #059669;
+}
+
+/* Delete */
+.card button:last-of-type {
+  background: #ef4444;
+}
+
+.card button:last-of-type:hover {
+  background: #dc2626;
+}
+
+/* Empty / loading */
+p {
+  color: #6b7280;
+}

@@ -1,5 +1,7 @@
-from django.urls import path
-from .views import add_or_update, list_source, delete_source
+
+"""working urls"""
+from django.urls import path, include
+from .views import add_or_update, list_source, delete_source, new_sources
 
 # app_name = "sources"
 
@@ -16,5 +18,5 @@ urlpatterns = [
         delete_source,
         name="delete_source",
     ),
-    # path("search/", source_autocomplete, name="source_autocomplete"),
+    path("new", new_sources, name="ang_sources"),
 ]

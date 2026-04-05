@@ -30,5 +30,6 @@ class SignInView(LoginView):
 
     def get_success_url(self):
         if Source.objects.filter(created_by=self.request.user).exists():
-            return reverse("source_list")
+            # return reverse("source_list")
+            return reverse("ang_sources")
         return reverse("add_source")

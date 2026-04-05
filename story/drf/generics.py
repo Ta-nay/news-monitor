@@ -21,8 +21,9 @@ class StoryListCreateView(generics.ListCreateAPIView):
         return queryset
     def perform_create(self, serializer):
         serializer.save(
-            created_by=self.request.user,
-            updated_by=self.request.user
+            created_by = self.request.user,
+            updated_by = self.request.user,
+            source_id = None
         )
 
 

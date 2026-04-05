@@ -1,3 +1,4 @@
+"""working views from project"""
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
@@ -60,6 +61,15 @@ def delete_source(request, id):
     delete_source_service(request.user, id)
     return redirect("source_list")
 
+
+def new_sources(request):
+    return render(request, "source/index.html", context={})
+
+
+
+
+
+"""obselete views"""
 # def source_autocomplete(request):
 #     """Logic for autocomplete added on source searching bar."""
 #     query = request.GET.get("q", "")

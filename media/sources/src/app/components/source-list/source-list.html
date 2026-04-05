@@ -1,0 +1,43 @@
+<button class="create-btn" (click)="createSource()">+ Create Source</button>
+
+@if (loading) {
+  <div>Loading...</div>
+} @else {
+
+  @if ((sources$ | async)?.length === 0) {
+    <div>No sources found.</div>
+  } @else {
+
+    @for (source of (sources$ | async); track source.id) {
+      <div class="card">
+        <h3>{{ source.name }}</h3>
+
+        <p><strong>URL:</strong> {{ source.url }}</p>
+
+        <p>
+          <strong>Company:</strong>
+          {{ source.company.name }}
+        </p>
+
+        <div>
+          <strong>Tagged Companies:</strong>
+
+          @if (source.tagged_companies.length) {
+            <ul>
+              @for (c of source.tagged_companies; track c.id) {
+                <li>{{ c.name }}</li>
+              }
+            </ul>
+          } @else {
+            <span>No tags</span>
+          }
+        </div>
+
+        <button class="edit-btn" (click)="editSource(source.id)">Edit</button>
+        <button class="delete-btn" (click)="deleteSource(source.id)">Delete</button>
+      </div>
+    }
+
+  }
+
+}

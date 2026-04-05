@@ -13,7 +13,6 @@ nenv/
 *.pot
 local_settings.py
 db.sqlite3
-media/
 static/
 
 # IDE-specific (e.g., PyCharm, VS Code)

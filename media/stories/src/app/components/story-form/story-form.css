@@ -1,0 +1,105 @@
+/* Page background */
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f4f6fb, #eef2ff);
+  padding: 40px 16px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Title */
+h2 {
+  text-align: center;
+  margin-bottom: 28px;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Form container */
+form {
+  max-width: 520px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels */
+label {
+  font-size: 13px;
+  margin-bottom: 6px;
+  margin-top: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Inputs & textarea */
+input,
+textarea {
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: #fafafa;
+}
+
+/* Focus effect */
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* Textarea */
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Buttons container */
+form button {
+  margin-top: 16px;
+}
+
+/* Primary button */
+button[type="submit"] {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+  font-weight: 500;
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(135deg, #4338ca, #4f46e5);
+}
+
+/* Cancel button */
+button[type="button"] {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+button[type="button"]:hover {
+  background: #d1d5db;
+}
+
+/* Shared button styles */
+button {
+  padding: 11px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Button spacing (side by side) */
+button + button {
+  margin-left: 10px;
+}

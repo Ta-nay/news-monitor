@@ -1,0 +1,114 @@
+Page container
+:host {
+  display: block;
+  padding: 24px;
+  background: #f4f6fb;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Create button */
+.create-btn {
+  background: #4f46e5;
+  color: #fff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: 0.2s ease;
+}
+
+.create-btn:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+/* Loading & empty state */
+div {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Card styling */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  transition: 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+/* Title */
+.card h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #111827;
+}
+
+/* Paragraphs */
+.card p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Strong labels */
+.card strong {
+  color: #111827;
+}
+
+/* Tagged companies list */
+.card ul {
+  margin: 8px 0;
+  padding-left: 18px;
+}
+
+.card li {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+/* No tags text */
+.card span {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Buttons inside card */
+.card button {
+  margin-top: 10px;
+  margin-right: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* Edit button */
+.edit-btn {
+  background: #10b981;
+  color: #fff;
+}
+
+.edit-btn:hover {
+  background: #059669;
+}
+
+/* Delete button */
+.delete-btn {
+  background: #ef4444;
+  color: #fff;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
