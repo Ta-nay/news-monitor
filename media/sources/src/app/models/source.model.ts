@@ -13,4 +13,6 @@ export interface Source {
   updated_by: number;
   created_on: string;
   updated_on: string;
+  is_owner : boolean;
+  isStaff : boolean;
 }

@@ -79,7 +79,7 @@ export class SourceForm implements OnInit {
       },
       error: (err) => {
   console.error('FULL ERROR:', err);
-  console.error('BACKEND ERROR:', err.error); // errors from backend
+  console.error('BACKEND ERROR:', err.error); 
   this.loading = false;
   this.cdr.markForCheck()
 }

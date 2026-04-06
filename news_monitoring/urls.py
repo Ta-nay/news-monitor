@@ -36,6 +36,7 @@ urlpatterns = [
     path("stories/", include("story.urls")),
     path("source/",include("source.drf.urls")),
     path("story/",include("story.drf.urls")),
+    path("company/",include("company.drf.urls")),
     # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ] + debug_toolbar_urls()

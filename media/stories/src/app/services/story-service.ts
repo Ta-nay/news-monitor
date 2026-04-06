@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -10,14 +10,18 @@ export class StoryService {
 
   constructor(private http: HttpClient) {}
 
-  getStories(search?: string): Observable<any>  {
-  const url = search
-    ? `${this.apiUrl}?search=${search}`
-    : this.apiUrl;
-  return this.http.get<any>(url, { withCredentials: true });
+getStories(search: string = '', page: number = 1): Observable<any> {
+  let params = new HttpParams().set('page', page);
+  if (search) {
+    params = params.set('search', search);
+  }
+  return this.http.get<any>(this.apiUrl, {
+    params,
+    withCredentials: true
+  });
 }
 
-  getStory(id: number): Observable<any> {
+getStory(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}${id}/`, {
     withCredentials: true
   });

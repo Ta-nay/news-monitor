@@ -40,3 +40,7 @@ class SourceSerializer(serializers.ModelSerializer):
             "updated_on",
         ]
         read_only_fields = ["created_by", "updated_by", "created_on", "updated_on"]
+
+    def get_is_owner(self, obj):
+        request = self.context.get("request")
+        return obj.created_by_id == request.user.id

@@ -7,8 +7,10 @@
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* Create button */
-button {
+/* Top Create button */
+:host > button {
+  display: inline-block;
+  width: auto;
   background: #4f46e5;
   color: #fff;
   padding: 10px 16px;
@@ -20,7 +22,7 @@ button {
   transition: 0.2s ease;
 }
 
-button:hover {
+:host > button:hover {
   background: #4338ca;
   transform: translateY(-1px);
 }
@@ -35,6 +37,7 @@ button:hover {
   transition: 0.25s ease;
 }
 
+/* Card hover */
 .card:hover {
   transform: translateY(-4px);
 }
@@ -53,41 +56,83 @@ button:hover {
   color: #374151;
 }
 
-/* Body text (story content) */
-.card p:nth-of-type(3) {
-  margin-top: 10px;
-  color: #4b5563;
-  line-height: 1.5;
+/* Link */
+.story-link a {
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 500;
 }
 
-/* Buttons inside card */
-.card button {
-  margin-top: 10px;
-  margin-right: 8px;
+.story-link a:hover {
+  text-decoration: underline;
+}
+
+/* 🔥 Button container inside card */
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-buttons {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Card buttons */
+.card-buttons button {
+  width: auto;
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 13px;
+  border: none;
+  cursor: pointer;
 }
 
-/* Edit */
-.card button:first-of-type {
+/* Edit button */
+.card-buttons button:first-child {
   background: #10b981;
+  color: white;
 }
 
-.card button:first-of-type:hover {
+.card-buttons button:first-child:hover {
   background: #059669;
 }
 
-/* Delete */
-.card button:last-of-type {
+/* Delete button */
+.card-buttons button:last-child {
   background: #ef4444;
+  color: white;
 }
 
-.card button:last-of-type:hover {
+.card-buttons button:last-child:hover {
   background: #dc2626;
 }
 
 /* Empty / loading */
 p {
   color: #6b7280;
+}
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  max-width: 400px;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.search-bar button {
+  width: auto;
+  padding: 10px 16px;
+  background: #4f46e5;
+  color: white;
+  border-radius: 8px;
 }

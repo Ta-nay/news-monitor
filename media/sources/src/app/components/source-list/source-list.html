@@ -1,17 +1,26 @@
 <button class="create-btn" (click)="createSource()">+ Create Source</button>
 
+<div class="search-bar">
+  <input
+    type="text"
+    placeholder="Search sources..."
+    [formControl]="searchControl"
+    class="search-input"
+  />
+  <button (click)="onSearch()">Search</button>
+</div>
+
 @if (loading) {
   <div>Loading...</div>
 } @else {
 
-  @if ((sources$ | async)?.length === 0) {
+  @if (sources.length === 0) {
     <div>No sources found.</div>
   } @else {
 
-    @for (source of (sources$ | async); track source.id) {
+    @for (source of sources; track source.id) {
       <div class="card">
         <h3>{{ source.name }}</h3>
-
         <p><strong>URL:</strong> {{ source.url }}</p>
 
         <p>
@@ -39,5 +48,13 @@
     }
 
   }
+
+  <!-- ✅ paginator should be inside else -->
+  <mat-paginator
+    [length]="totalItems"
+    [pageSize]="10"
+    [pageSizeOptions]="[]"
+    (page)="onPageChange($event)">
+  </mat-paginator>
 
 }

@@ -12,6 +12,7 @@ class StoryViewSet(viewsets.ModelViewSet):
     search_fields = ["title", "body_text"]
 
     def get_queryset(self):
+        user = self.request.user
         queryset = (
             Story.objects
             .select_related("company", "source", "created_by", "updated_by")
@@ -19,9 +20,12 @@ class StoryViewSet(viewsets.ModelViewSet):
             .order_by("-created_on")
         )
 
-        company_id = self.request.query_params.get("company_id")
-        if company_id:
-            queryset = queryset.filter(company_id=company_id)
+        if user.is_staff:
+            company_id = self.request.query_params.get("company_id")
+            if company_id:
+                queryset = queryset.filter(company_id=company_id)
+        else:
+            queryset = queryset.filter(company=user.company)
 
         return queryset
 

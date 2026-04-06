@@ -10,10 +10,17 @@ export class SourceService {
 
   constructor(private http: HttpClient) {}
 
-  getSources(): Observable<any> {
+  getSources(search: string = '', page: number = 1): Observable<any> {
+    let params = new HttpParams().set('page', page);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
     return this.http.get<any>(this.apiUrl, {
-    withCredentials: true
-  });
+      params,
+      withCredentials: true
+    });
   }
 
   getSource(id: number): Observable<any> {
