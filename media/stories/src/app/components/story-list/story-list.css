@@ -67,7 +67,7 @@
   text-decoration: underline;
 }
 
-/* 🔥 Button container inside card */
+
 .card {
   display: flex;
   flex-direction: column;

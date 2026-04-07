@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { Company } from '../models/source.model';
+import { Company } from '../models/story.models';
 
 interface CompanyResponse {
   count: number;

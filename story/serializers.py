@@ -21,18 +21,20 @@ class StorySerializer(serializers.ModelSerializer):
     company = CompanySerializer(read_only=True)
     source = SourceSimpleSerializer(read_only=True)
     tagged_companies = CompanySerializer(many=True, read_only=True)
+    is_owner = serializers.SerializerMethodField()
+    is_staff = serializers.SerializerMethodField()
 
     # WRITE (IDs)
-    company_id = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(),
-        source="company",
-        write_only=True
-    )
-    source_id = serializers.PrimaryKeyRelatedField(
-        queryset=Source.objects.all(),
-        source="source",
-        write_only=True
-    )
+    # company_id = serializers.PrimaryKeyRelatedField(
+    #     queryset=Company.objects.all(),
+    #     source="company",
+    #     write_only=True
+    # )
+    # source_id = serializers.PrimaryKeyRelatedField(
+    #     queryset=Source.objects.all(),
+    #     source="source",
+    #     write_only=True
+    # )
     tagged_company_ids = serializers.PrimaryKeyRelatedField(
         queryset=Company.objects.all(),
         many=True,
@@ -47,12 +49,13 @@ class StorySerializer(serializers.ModelSerializer):
             "title",
             "body_text",
             "url",
-
+            "is_owner",
+            "is_staff",
             "company",
-            "company_id",
+            # "company_id",
 
             "source",
-            "source_id",
+            # "source_id",
 
             "tagged_companies",
             "tagged_company_ids",
@@ -69,3 +72,10 @@ class StorySerializer(serializers.ModelSerializer):
             "created_on",
             "updated_on",
         ]
+
+    def get_is_owner(self, obj):
+        request = self.context.get("request")
+        return obj.created_by_id == request.user.id
+
+    def get_is_staff(self, obj):
+        return self.context["request"].user.is_staff

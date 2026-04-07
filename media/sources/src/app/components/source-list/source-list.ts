@@ -68,7 +68,6 @@ export class SourceList implements OnInit {
 
   deleteSource(id: number): void {
     if (!confirm('Delete this source?')) return;
-
     this.sourceService.deleteSource(id).subscribe({
       next: () => {
         this.loadSources(); // refresh stream

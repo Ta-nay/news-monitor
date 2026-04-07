@@ -6,17 +6,14 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class SourceService {
+  
   private apiUrl = 'http://127.0.0.1:8000/source/source/';
-
   constructor(private http: HttpClient) {}
-
   getSources(search: string = '', page: number = 1): Observable<any> {
     let params = new HttpParams().set('page', page);
-
     if (search) {
       params = params.set('search', search);
     }
-
     return this.http.get<any>(this.apiUrl, {
       params,
       withCredentials: true

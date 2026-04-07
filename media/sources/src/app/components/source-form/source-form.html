@@ -17,16 +17,54 @@
     </div>
 
     <div>
-      <label>Company ID</label>
-      <input type="number" formControlName="company_id" />
+       <label>Tagged Companies</label>
+      <mat-form-field class="w-full">
+
+    <mat-chip-grid #chipGrid>
+
+      <!-- Selected Chips -->
+      @for (company of selectedCompanies; track company.id) {
+        <mat-chip-row (removed)="removeCompany(company)">
+          {{ company.name }}
+          <button matChipRemove>
+            <mat-icon>X</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+
+    </mat-chip-grid>
+
+    <!-- Input -->
+    <input
+      matInput
+      placeholder="Search and add companies"
+      [formControl]="searchControl"
+      [matAutocomplete]="auto"
+      [matChipInputFor]="chipGrid"
+    />
+
+    <!-- Autocomplete -->
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      [displayWith]="displayFn"
+      (optionSelected)="addCompany($event.option.value)"
+    >
+      @for (company of companies$ | async; track company.id) {
+        <mat-option [value]="company">
+          {{ company.name }}
+        </mat-option>
+      }
+    </mat-autocomplete>
+
+  </mat-form-field>
     </div>
 
+    <div class="button-row">
     <button type="submit">
       {{ isEdit ? 'Update' : 'Create' }}
     </button>
-
     <button type="button" (click)="goBack()">Cancel</button>
-
+    </div>
   </form>
 
 }

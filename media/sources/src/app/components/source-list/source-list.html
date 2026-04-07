@@ -41,9 +41,10 @@
             <span>No tags</span>
           }
         </div>
-
+        @if (source.is_owner || source.is_staff) {
         <button class="edit-btn" (click)="editSource(source.id)">Edit</button>
         <button class="delete-btn" (click)="deleteSource(source.id)">Delete</button>
+      }
       </div>
     }
 

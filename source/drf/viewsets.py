@@ -18,20 +18,24 @@ class SourceViewSet(viewsets.ModelViewSet):
             .select_related("company", "created_by", "updated_by")
             .prefetch_related("tagged_companies")
         )
-        if user.is_staff:
-            company_id = self.request.query_params.get("company_id")
-            if company_id:
-                queryset = queryset.filter(company_id=company_id)
-        else:
-            queryset = queryset.filter(company=user.company)
+        if not user.is_staff:
+        #     company_id = self.request.query_params.get("company_id")
+        #     if company_id:
+        #         queryset = queryset.filter(company_id=company_id)
+        # else:
+            queryset = queryset.filter(company_id=user.company_id)
 
-        return queryset
+        return queryset.order_by("-created_on")
 
     def perform_create(self, serializer):
         serializer.save(
-            created_by=self.request.user,
-            updated_by=self.request.user
+            company = self.request.user.company,
+            created_by = self.request.user,
+            updated_by = self.request.user
         )
 
     def perform_update(self, serializer):
         serializer.save(updated_by=self.request.user)
+
+    def get_serializer_context(self):
+        return {"request": self.request}

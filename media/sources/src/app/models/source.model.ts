@@ -14,5 +14,5 @@ export interface Source {
   created_on: string;
   updated_on: string;
   is_owner : boolean;
-  isStaff : boolean;
+  is_staff : boolean;
 }

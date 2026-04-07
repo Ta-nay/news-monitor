@@ -28,11 +28,25 @@
             Read Full Story →
           </a>
         </p>
+        <div>
+          <strong>Tagged Companies:</strong>
 
+          @if (story.tagged_companies.length) {
+            <ul>
+              @for (c of story.tagged_companies; track c.id) {
+                <li>{{ c.name }}</li>
+              }
+            </ul>
+          } @else {
+            <span>No tags</span>
+          }
+        </div>
+        @if (story.is_owner || story.is_staff) {
         <div class="card-buttons">
-  <button (click)="editStory(story.id)">Edit</button>
-  <button (click)="deleteStory(story.id)">Delete</button>
-</div>
+          <button (click)="editStory(story.id)">Edit</button>
+          <button (click)="deleteStory(story.id)">Delete</button>
+        </div>
+        }
       </div>
     }
   }

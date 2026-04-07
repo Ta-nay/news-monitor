@@ -21,4 +21,4 @@ class CompanyViewSet(viewsets.ReadOnlyModelViewSet):
         search = self.request.query_params.get("search")
         if search:
             queryset = queryset.filter(name__icontains=search)
-        return queryset.order_by("name")[:20]
+        return queryset.order_by("name")

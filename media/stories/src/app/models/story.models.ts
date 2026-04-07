@@ -15,7 +15,8 @@ export interface Story {
   title: string;
   body_text: string;
   url: string;
-
+  is_owner : boolean;
+  is_staff : boolean;
   company: Company;
   source: Source;
   tagged_companies: Company[];

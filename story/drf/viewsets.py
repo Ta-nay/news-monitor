@@ -17,20 +17,20 @@ class StoryViewSet(viewsets.ModelViewSet):
             Story.objects
             .select_related("company", "source", "created_by", "updated_by")
             .prefetch_related("tagged_companies")
-            .order_by("-created_on")
         )
 
-        if user.is_staff:
-            company_id = self.request.query_params.get("company_id")
-            if company_id:
-                queryset = queryset.filter(company_id=company_id)
-        else:
-            queryset = queryset.filter(company=user.company)
+        if not user.is_staff:
+        #     company_id = self.request.query_params.get("company_id")
+        #     if company_id:
+        #         queryset = queryset.filter(company_id=company_id)
+        # else:
+            queryset = queryset.filter(company_id=user.company_id)
 
-        return queryset
+        return queryset.order_by("-id")
 
     def perform_create(self, serializer):
         serializer.save(
+            company=self.request.user.company,
             created_by=self.request.user,
             updated_by=self.request.user
         )
