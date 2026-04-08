@@ -1,62 +1,63 @@
 <h2>{{ isEdit ? 'Edit Story' : 'Create Story' }}</h2>
-
 <form [formGroup]="form" (ngSubmit)="submit()">
+<label>Title</label>
+<input formControlName="title" />
+<label>Body</label>
+<textarea formControlName="body_text"></textarea>
+<label>URL</label>
+<mat-form-field>
+  <input matInput placeholder="URL" formControlName="url" />
 
-  <label>Title</label>
-  <input formControlName="title" />
+  @if (form.get('url')?.hasError('required')) {
+    <mat-error>
+      URL is required
+    </mat-error>
+  }
 
-  <label>Body</label>
-  <textarea formControlName="body_text"></textarea>
-
-  <label>URL</label>
-  <input formControlName="url" />
-
-  <div>
-     <label>Tagged Companies</label>
-    <mat-form-field class="w-full">
+  @if (form.get('url')?.hasError('pattern')) {
+    <mat-error>
+      Please enter a valid URL
+    </mat-error>
+  }
+</mat-form-field>
+<div>
+  <label>Tagged Companies</label>
+  <mat-form-field class="w-full">
     <mat-chip-grid #chipGrid>
-
       <!-- Selected Chips -->
       @for (company of selectedCompanies; track company.id) {
-        <mat-chip-row (removed)="removeCompany(company)">
-          {{ company.name }}
-          <button matChipRemove>
-            <mat-icon>X</mat-icon>
-          </button>
-        </mat-chip-row>
+      <mat-chip-row (removed)="removeCompany(company)">
+        {{ company.name }}
+        <button matChipRemove>
+          <mat-icon>X</mat-icon>
+        </button>
+      </mat-chip-row>
       }
-
     </mat-chip-grid>
-
     <!-- Input -->
     <input
-      matInput
-      placeholder="Search and add companies"
-      [formControl]="searchControl"
-      [matAutocomplete]="auto"
-      [matChipInputFor]="chipGrid"
+    matInput
+    placeholder="Search and add companies"
+    [formControl]="searchControl"
+    [matAutocomplete]="auto"
+    [matChipInputFor]="chipGrid"
     />
-
     <!-- Autocomplete -->
     <mat-autocomplete
-      #auto="matAutocomplete"
-      [displayWith]="displayFn"
-      (optionSelected)="addCompany($event.option.value)"
+    #auto="matAutocomplete"
+    [displayWith]="displayFn"
+    (optionSelected)="addCompany($event.option.value)"
     >
-      @for (company of companies$ | async; track company.id) {
-        <mat-option [value]="company">
-          {{ company.name }}
-        </mat-option>
-      }
+    @for (company of companies$ | async; track company.id) {
+    <mat-option [value]="company">
+      {{ company.name }}
+    </mat-option>
+    }
     </mat-autocomplete>
-
   </mat-form-field>
-  </div>
-
-  <button type="submit">
-    {{ isEdit ? 'Update' : 'Create' }}
-  </button>
-
-  <button type="button" (click)="goBack()">Cancel</button>
-
+</div>
+<button type="submit">
+{{ isEdit ? 'Update' : 'Create' }}
+</button>
+<button type="button" (click)="close()">Cancel</button>
 </form>

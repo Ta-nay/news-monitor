@@ -3,9 +3,11 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Observable, map, startWith } from 'rxjs';
 import { Source } from '../../models/source.model';
-import { SourceService } from '../../services/source-service';
+import { PaginatedResponse, SourceService } from '../../services/source-service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
+import { SourceForm } from '../source-form/source-form';
 
 @Component({
   selector: 'app-source-list',
@@ -16,25 +18,27 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 })
 export class SourceList implements OnInit {
 
-  searchControl = new FormControl('');
-  sources: Source[] = [];
-  loading = true;
+  searchControl : FormControl = new FormControl('');
+  sources : Source[] = [];
+  loading : boolean= true;
 
   // pagination state
-  page = 1;
-  totalItems = 0;
+  page : number = 1;
+  totalItems : number = 0;
 
   constructor(
     private sourceService: SourceService,
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
     this.loadSources();
+    
   }
 
-  onSearch() {
+  onSearch():void{
     this.page = 1;
     this.loadSources();
   }
@@ -44,7 +48,7 @@ export class SourceList implements OnInit {
 
     this.sourceService
       .getSources(this.searchControl.value || '', this.page)
-      .subscribe((res: any) => {
+      .subscribe((res: PaginatedResponse<Source>) => {
         this.sources = res.results;
         this.totalItems = res.count;
         this.loading = false;
@@ -58,14 +62,39 @@ export class SourceList implements OnInit {
     this.cdr.markForCheck();
   }
 
-  createSource(): void {
-    this.router.navigate(['/sources/new/create']);
+  // createSource(): void {
+  //   this.router.navigate(['/sources/new/create']);
+  // }
+
+  // editSource(id: number): void {
+  //   this.router.navigate(['/sources/new/edit', id]);
+  // }
+
+  openCreate() {
+  const dialogRef = this.dialog.open(SourceForm, {
+    width: '600px'
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.loadSources();
+    }
+  });
   }
 
-  editSource(id: number): void {
-    this.router.navigate(['/sources/new/edit', id]);
-  }
+  openEdit(source: Source) {
+  const dialogRef = this.dialog.open(SourceForm, {
+    width: '600px',
+    data: { source } 
+  });
 
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.loadSources();
+    }
+  });
+}
+    
   deleteSource(id: number): void {
     if (!confirm('Delete this source?')) return;
     this.sourceService.deleteSource(id).subscribe({

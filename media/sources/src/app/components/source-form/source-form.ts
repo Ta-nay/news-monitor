@@ -10,6 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { debounceTime, distinctUntilChanged, Observable, of, startWith, switchMap } from 'rxjs';
 import { CompanyService } from '../../services/company-service';
 import { Company } from '../../models/source.model';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Inject } from '@angular/core';
 
 @Component({
   selector: 'app-source-form',
@@ -40,26 +42,37 @@ export class SourceForm implements OnInit {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private sourceService: SourceService,
+    private dialogRef: MatDialogRef<SourceForm>,
+    @Inject(MAT_DIALOG_DATA) public data: any 
   ) {}
 
   
-  
-
   ngOnInit(): void {
     this.searchControl = this.fb.control('');
     this.form = this.fb.group({
       name: ['', Validators.required],
-      url: ['', Validators.required],
-      tagged_company_ids: [[]]
+      url: [
+    '',
+    [
+      Validators.required,
+      Validators.pattern(/^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/),
+    ],
+  ],
+      tagged_company_ids: [[],Validators.required]
     });
+    // console.log('MODAL DATA:', this.data);
+    //detect edit mode
+  if (this.data?.source) {
+    const source = this.data.source;
 
-    const idParam = this.route.snapshot.paramMap.get('id');
+    this.selectedCompanies = source.tagged_companies || [];
 
-    if (idParam) {
-      this.isEdit = true;
-      this.sourceId = Number(idParam);
-      this.loadSource();
-    }
+    this.form.patchValue({
+      name: source.name,
+      url: source.url,
+      tagged_company_ids: this.selectedCompanies.map((c: Company) => c.id)
+    });
+  }
 
     this.companies$ = this.searchControl.valueChanges.pipe(
       startWith(''),
@@ -73,7 +86,7 @@ export class SourceForm implements OnInit {
     );
   }
 
-  addCompany(company: Company) {
+  addCompany(company: Company) : void {
     const exists = this.selectedCompanies.some(c => c.id === company.id);
     if (exists) return;
     this.selectedCompanies.push(company);
@@ -83,7 +96,7 @@ export class SourceForm implements OnInit {
     this.searchControl.setValue('');
   }
 
-  removeCompany(company: Company) {
+  removeCompany(company: Company) : void {
     this.selectedCompanies = this.selectedCompanies.filter(c => c.id !== company.id);
     this.form.patchValue({
       tagged_company_ids: this.selectedCompanies.map(c => c.id)
@@ -94,7 +107,7 @@ export class SourceForm implements OnInit {
     return company?.name || '';
   }
 
-  loadSource(): void {
+  loadSource() : void {
     this.loading = true;
 
     this.sourceService.getSource(this.sourceId).subscribe({
@@ -104,7 +117,7 @@ export class SourceForm implements OnInit {
           name: data.name,
           url: data.url,
           tagged_company_ids: data.tagged_companies
-            ? data.tagged_companies.map((c: any) => c.id)
+            ? data.tagged_companies.map((c: Company) => c.id)
             : []
         });
         this.loading = false;
@@ -122,21 +135,22 @@ export class SourceForm implements OnInit {
     if (this.form.invalid) return;
     this.loading = true;
     // console.log('PAYLOAD:', this.form.value);
-    const request = this.isEdit
-      ? this.sourceService.updateSource(this.sourceId, this.form.value)
+    const request = this.data?.source
+      ? this.sourceService.updateSource(this.data.source.id, this.form.value)
       : this.sourceService.createSource(this.form.value);
     request.subscribe({
-      next: () => {
-        this.router.navigate(['/sources/new']);
-      },
-      error: (err) => {
-        console.error('FULL ERROR:', err);
-        console.error('BACKEND ERROR:', err.error); 
-        this.loading = false;
-        this.cdr.markForCheck()
-      }
-    });
+    next: (res) => {
+      this.dialogRef.close(res); // return data to parent
+    },
+    error: (err) => {
+      console.error(err);
+    }
+  });
   }
+
+  close(): void {
+  this.dialogRef.close();
+}
 
   goBack(): void {
   this.router.navigate(['/sources/new']);

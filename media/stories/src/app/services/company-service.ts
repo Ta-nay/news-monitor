@@ -14,15 +14,13 @@ interface CompanyResponse {
   providedIn: 'root',
 })
 export class CompanyService {
-  private apiUrl = 'http://127.0.0.1:8000/company/company/'
+  private apiUrl = 'http://127.0.0.1:8000/company/company/';
   constructor(private http: HttpClient) {}
   searchCompanies(query: string) {
-  return this.http
-    .get<CompanyResponse>( this.apiUrl, {
-      params: { search : query }
-    })
-    .pipe(
-      map(res => res.results)
-    );
-}
+    return this.http
+      .get<CompanyResponse>(this.apiUrl, {
+        params: { search: query },
+      })
+      .pipe(map((res) => res.results));
+  }
 }

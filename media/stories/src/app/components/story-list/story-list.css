@@ -4,7 +4,10 @@
   padding: 24px;
   background: #f4f6fb;
   min-height: 100vh;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 /* Top Create button */
@@ -66,7 +69,6 @@
 .story-link a:hover {
   text-decoration: underline;
 }
-
 
 .card {
   display: flex;

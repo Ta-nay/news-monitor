@@ -1,61 +1,53 @@
-<button (click)="createStory()">+ Create Story</button>
-
+<button (click)="openCreate()">+ Create Story</button>
 @if (loading) {
-  <div>Loading...</div>
+<div>Loading...</div>
 } @else {
-  <div class="search-bar">
+<div class="search-bar">
   <input
     type="text"
     placeholder="Search stories..."
     [formControl]="searchControl"
     class="search-input"
-  />
-
+    />
   <button (click)="onSearch()">Search</button>
 </div>
-
-  @if (stories.length === 0) {
-    <div>No stories found.</div>
-  } @else {
-    @for (story of stories; track story.id) {
-      <div class="card">
-        <h3>{{ story.title }}</h3>
-
-        <p>{{ story.body_text }}</p>
-
-        <p class="story-link">
-          <a [href]="story.url" target="_blank" rel="noopener noreferrer">
-            Read Full Story →
-          </a>
-        </p>
-        <div>
-          <strong>Tagged Companies:</strong>
-
-          @if (story.tagged_companies.length) {
-            <ul>
-              @for (c of story.tagged_companies; track c.id) {
-                <li>{{ c.name }}</li>
-              }
-            </ul>
-          } @else {
-            <span>No tags</span>
-          }
-        </div>
-        @if (story.is_owner || story.is_staff) {
-        <div class="card-buttons">
-          <button (click)="editStory(story.id)">Edit</button>
-          <button (click)="deleteStory(story.id)">Delete</button>
-        </div>
-        }
-      </div>
+@if (stories.length === 0) {
+<div>No stories found.</div>
+} @else {
+@for (story of stories; track story.id) {
+<div class="card">
+  <h3>{{ story.title }}</h3>
+  <p>{{ story.body_text }}</p>
+  <p class="story-link">
+    <a [href]="story.url" target="_blank" rel="noopener noreferrer">
+    Read Full Story →
+    </a>
+  </p>
+  <div>
+    <strong>Tagged Companies:</strong>
+    @if (story.tagged_companies.length) {
+    <ul>
+      @for (c of story.tagged_companies; track c.id) {
+      <li>{{ c.name }}</li>
+      }
+    </ul>
+    } @else {
+    <span>No tags</span>
     }
+  </div>
+  @if (story.is_owner || story.is_staff) {
+  <div class="card-buttons">
+    <button (click)="openEdit(story)">Edit</button>
+    <button (click)="deleteStory(story.id)">Delete</button>
+  </div>
   }
-
+</div>
 }
-
+}
+}
 <mat-paginator
-  [length]="totalItems"
-  [pageSize]="10"
-  [pageSizeOptions]="[]"
-  (page)="onPageChange($event)">
+[length]="totalItems"
+[pageSize]="10"
+[pageSizeOptions]="[]"
+(page)="onPageChange($event)">
 </mat-paginator>
